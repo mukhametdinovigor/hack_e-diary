@@ -57,9 +57,9 @@ def main():
         subject = random_subject
     try:
         schoolkid = Schoolkid.objects.get(full_name__contains=name)
-    except ObjectDoesNotExist:
+    except Schoolkid.DoesNotExist:
         print('Ученика с таким именем не существует')
-    except MultipleObjectsReturned:
+    except Schoolkid.MultipleObjectsReturned:
         print('Есть несколько учеников с таким именем')
     else:
         fix_marks(schoolkid)
