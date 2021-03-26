@@ -1,7 +1,6 @@
 import random
 
 from datacenter.models import Schoolkid, Mark, Subject, Chastisement, Lesson, Commendation
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 
 def fix_marks(schoolkid):
@@ -36,27 +35,27 @@ def create_commendation(year_of_study, group_letter, schoolkid, subject):
     ]
     commendation = random.choice(commendations)
     try:
-        lesson = random.choice(Lesson.objects.filter(year_of_study=year_of_study, group_letter=group_letter,
-                                                 subject__title=subject))
+        lesson = Lesson.objects.filter(year_of_study=year_of_study, group_letter=group_letter,
+                                       subject__title=subject).order_by('?')[0]
     except IndexError:
         print(f'Не существует такого урока - {subject}')
     else:
         Commendation.objects.create(text=commendation, created=lesson.date, schoolkid=schoolkid, subject=lesson.subject,
-                                teacher=lesson.teacher)
+                                    teacher=lesson.teacher)
 
 
-def main():
-    name = 'Фролов Иван'
-    year_of_study = 6
-    group_letter = 'А'
-    schoolkid_subject = ''
+def main(name='Фролов Иван', year_of_study=6, group_letter='А', subject=''):
+    schoolkid_name = name
+    year_of_study = year_of_study
+    group_letter = group_letter
+    schoolkid_subject = subject
     random_subject = random.choice(get_subjects(year_of_study))
     if schoolkid_subject:
         subject = schoolkid_subject
     else:
         subject = random_subject
     try:
-        schoolkid = Schoolkid.objects.get(full_name__contains=name)
+        schoolkid = Schoolkid.objects.get(full_name__contains=schoolkid_name)
     except Schoolkid.DoesNotExist:
         print('Ученика с таким именем не существует')
     except Schoolkid.MultipleObjectsReturned:
